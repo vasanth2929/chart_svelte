@@ -1,5 +1,5 @@
 <script lang="ts">
-	import RadialChart from "./RadialChart.svelte";
+	import RadialChart from "./components/RadialChart.svelte";
 	import type { Data } from "./types";
 	let data: Data<"spent", "estimate"> = [
 		{
