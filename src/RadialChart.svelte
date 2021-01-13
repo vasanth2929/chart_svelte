@@ -41,7 +41,10 @@
         leftValues = leftValues.map((item, i) => {
             return {
                 ...item,
-                x: findXPosition(150, (90 / rightValues.length) * i),
+                x: findXPosition(
+                    150,
+                    360 - 180 - (90 / rightValues.length) * i
+                ),
                 y: height / 2 - i * 30,
             };
         });
@@ -65,6 +68,9 @@
     }
     .right-value {
         transform: translateX(20px);
+    }
+    .left-value {
+        transform: translateX(-25px);
     }
 </style>
 
