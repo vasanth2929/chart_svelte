@@ -2,7 +2,20 @@
     let width : number = 550;
     let height : number = 500 ;
     let yGap = 50;
-    let xAxisLabels = ['MileStone 1','Milestone 2','Milestone 3','Milestone 4']
+    let data = [
+        {
+            name: 'Milestone 1',
+        },
+        {
+            name: 'Milestone 2'
+        },
+        {
+            name: 'Milestone 3'
+        },
+        {
+            name: 'Milestone 4'
+        },
+    ];
     let yAxisValues = [50,100,150,200,250,300,350,400,450];
 </script>
 
@@ -26,12 +39,12 @@
         />
     
         <!-- xaxis label -->
-        {#each xAxisLabels as label,i }
+        {#each data as milestone,i }
           <text 
             x={i * 150 + 20}
             y={height-yGap+20}
             >
-             {label}
+             {milestone.name}
             </text>
             <rect 
               x={i * 150 + 20}
