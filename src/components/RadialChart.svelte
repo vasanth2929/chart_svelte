@@ -12,6 +12,23 @@
     let rightValues: any[] = [];
     let leftValues = [];
 
+    let hintboxVisible : boolean = false;
+    let hintBoxTop : number = 0;
+    let hintBoxLeft : number = 0;
+    let name : string = '';
+    let spent : string = '';
+    let estimate : string = '';
+
+    let handleMouseEnter = (e,milestone)=>{
+      hintBoxTop = e.clientY;	
+		  hintBoxLeft = e.clientX;
+		  hintboxVisible=true;
+		  spent = milestone.left.value;
+		  estimate = milestone.right.value;
+		  name = milestone.name;
+	}
+	let handleMouseLeave = ()=>{hintboxVisible=false};
+
     // on mounting
     onMount(() => {
         // assuming min and max value
@@ -72,6 +89,16 @@
     .left-value {
         transform: translateX(-25px);
     }
+    .hint__box {
+		padding:8px;
+		position:absolute;
+		background:white;
+		box-shadow:1px 1px 5px black,-1px -1px 5px black
+	}
+	.hint__box p {
+    font-size:14px;
+		text-align:center
+	}
 </style>
 
 <svg {width} {height}>
@@ -87,6 +114,8 @@
     {#each data as d, i}
         <!--    actual circle -->
         <circle
+            on:mouseenter={(e)=>handleMouseEnter(e,d)}
+            on:mouseleave={handleMouseLeave}
             cx={width / 2}
             cy={height / 2}
             r={d.radius}
@@ -138,3 +167,19 @@
     <!--    center vertical line -->
     <rect width="5" y={120} height="50%" x={width / 2} />
 </svg>
+
+
+<!-- tooltip -->
+{#if hintboxVisible}
+<div class="hint__box" style={`top:${hintBoxTop}px;left:${hintBoxLeft}px`}>
+    <p style="text-align:center">
+        {name}
+    </p>
+    <p>
+        Spent : {spent}
+    </p>
+    <p>
+        Estimate : {estimate}
+    </p>
+</div>
+{/if}
