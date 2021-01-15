@@ -119,7 +119,7 @@
             cx={width / 2}
             cy={height / 2}
             r={d.radius}
-            stroke="url(#mygradient)"
+            stroke={d.left.value <= d.right.value ? "#AAF092" : "url(#mygradient)"}
             stroke-width={strokeWidth}
             fill="none" />
 
