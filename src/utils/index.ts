@@ -25,3 +25,8 @@ export function degreesToRadians(degrees:number) : number {
   var pi = Math.PI;
   return degrees * (pi / 180);
 }
+
+export let findXPosition = (width:number,radius: number, angle: number) => {
+  let angleInRadians = (angle * Math.PI) / 180;
+  return width / 2 + radius * Math.cos(angleInRadians);
+};
