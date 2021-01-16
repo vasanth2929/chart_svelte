@@ -10,7 +10,7 @@
     let data: Data<"spent", "estimate"> = [
         {
             name: "M1",
-            left: { name: "spent", value: 6 },
+            left: { name: "spent", value: 8 },
             right: { name: "estimate", value: 5 },
         },
         {
@@ -21,13 +21,8 @@
         {
             name: "M3",
             left: { name: "spent", value: 3 },
-            right: { name: "estimate", value: 8 },
-        },
-        {
-            name: "M4",
-            left: { name: "spent", value: 7 },
             right: { name: "estimate", value: 3 },
-        },
+        }
     ];
     let { max, min } = findMinAndMax(data);
 
@@ -74,21 +69,20 @@
         // arc
         for (let i = 0; i < data.length; i++) {
             // right arc
-            // ctx.beginPath();
-            // ctx.strokeStyle = "palegreen";
-            // ctx.lineWidth = 30;
-            // indexOf = revArr.indexOf(data[i].right.value) + 1 ;
-            // console.log(data[i].right.value)
-            // ctx.arc(
-            //     width / 2,
-            //     height / 2,
-            //     startRadius - i * radiusGap,
-            //     degreesToRadians(360 - data[i].right.value ),
-            //     degreesToRadians(270),
-            //     true
-            // );
-            // ctx.stroke();
-            // ctx.closePath();
+            ctx.beginPath();
+            ctx.strokeStyle = "palegreen";
+            ctx.lineWidth = 30;
+            indexOf = revArr.indexOf(data[i].right.value) + 1 ;
+            ctx.arc(
+                width / 2,
+                height / 2,
+                startRadius - i * radiusGap,
+                degreesToRadians(360 - (indexOf === numbers.length ? 0: indexOf === 1 ? 90 - 90/numbers.length :90/indexOf) ),
+                degreesToRadians(270),
+                true
+            );
+            ctx.stroke();
+            ctx.closePath();
 
             // left arc
             // ctx.beginPath();
@@ -127,7 +121,7 @@
         ctx.moveTo(width / 2, height / 2);
         ctx.strokeStyle = "black";
         ctx.lineWidth = 3;
-        ctx.lineTo(width / 2, height / 2 - startRadius - 20 / 2);
+        ctx.lineTo(width / 2, height / 2 - startRadius - 15);
         ctx.stroke();
 
         // left side label
