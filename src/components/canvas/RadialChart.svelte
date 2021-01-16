@@ -27,19 +27,20 @@
     let { max, min } = findMinAndMax(data);
 
     function chart(
-        ele: HTMLCanvasElement,
+        ele: HTMLElement,
         options: Option = { width: 500, height: 400, data }
     ) {
+        let canvas = document.createElement('canvas');
         let startRadius = 150;
         let radiusGap = 30;
         let indexOf;
 
         let { width, height, data } = options;
-        ele.width = width;
-        ele.height = height;
-        ele.setAttribute("style", `border:2px dashed green`);
+        canvas.width = width;
+        canvas.height = height;
+        canvas.setAttribute("style", `border:2px dashed green`);
 
-        let ctx = ele.getContext("2d");
+        let ctx = canvas.getContext("2d");
         
         // right text 
         let numbers = getNumbers(min,max);
@@ -133,7 +134,9 @@
         ctx.font = "14px Arial";
         ctx.fillText("Estimate Time", width / 2 + 180 - 40, height / 2 + 40);
         ctx.closePath();
+
+        ele.appendChild(canvas);
     }
 </script>
 
-<canvas use:chart />
+<div use:chart/>
