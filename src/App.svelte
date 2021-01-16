@@ -5,16 +5,16 @@
 		{
 			name: 'M1',
 			left: { name: "spent", value: 3 },
-			right: { name: "estimate", value: 5 },
+			right: { name: "estimate", value: 7 },
 		},
 		{   
 			name: 'M2',
-			left: { name: "spent", value: 6 },
-			right: { name: "estimate", value: 3 },
+			left: { name: "spent", value: 8 },
+			right: { name: "estimate", value:5 },
 		},
 		{
 			name: 'M3',
-			left: { name: "spent", value: 3 },
+			left: { name: "spent", value: 8 },
 			right: { name: "estimate", value: 8 },
 		},
 	];

@@ -6,8 +6,8 @@
     export let height: number = 500;
     export let data = [];
     let strokeWidth: number = 20;
-    let startRadius: number = 30;
-    let radiusGap: number = 30;
+    let startRadius: number = 150;
+    let radiusGap: number = 40;
     let max: number, min: number;
     let rightValues: any[] = [];
     let leftValues = [];
@@ -42,9 +42,9 @@
             if (item.right.value > max) max = item.right.value;
             // adding radius key
             i = i + 1;
-            return { ...item, radius: startRadius + i * radiusGap };
+            return { ...item, radius: startRadius - i * radiusGap };
         });
-        for (let i = min; i <= max; i = i + 1) {
+        for (let i = max; i >= min; i = i - 1) {
             rightValues = [...rightValues, { text: i }];
             leftValues = [...leftValues, { text: i }];
         }
@@ -53,6 +53,7 @@
                 ...item,
                 x: findXPosition(150, (90 / rightValues.length) * i),
                 y: height / 2 - i * 30,
+                angle: 90/rightValues.length * i
             };
         });
         leftValues = leftValues.map((item, i) => {
@@ -63,16 +64,30 @@
                     360 - 180 - (90 / rightValues.length) * i
                 ),
                 y: height / 2 - i * 30,
+                angle: 360 - 180 - (90 / rightValues.length) * i
             };
         });
         leftValues.reverse();
         rightValues.reverse();
     });
-
+    
     let findXPosition = (radius: number, angle: number) => {
         let angleInRadians = (angle * Math.PI) / 180;
         return width / 2 + radius * Math.cos(angleInRadians);
     };
+    
+    let findItem = (val)=>{
+        let item = rightValues.find(item=>item.text === val);
+        return item;
+    }
+
+    let getPoints = (d)=>{
+       return `
+            ${width/2} ${height/2},
+            ${findItem(d.right.value).x - strokeWidth/2 - radiusGap/2} ${findItem(d.right.value).y} ,
+            ${width/2 + d.radius+strokeWidth/2} ${height/2} 
+       `;
+    } 
 </script>
 
 <style>
@@ -83,9 +98,9 @@
     text {
         font-size: 14px !important;
     }
-    .right-value {
+    /* .right-value {
         transform: translateX(20px);
-    }
+    } */
     .left-value {
         transform: translateX(-25px);
     }
@@ -122,22 +137,15 @@
             stroke={d.left.value <= d.right.value ? "#AAF092" : "url(#mygradient)"}
             stroke-width={strokeWidth}
             fill="none" />
-
-        <!--    left side slice -->
-        <!-- <rect
-            x={-d.radius + 20}
-            y={height / 2 - d.radius - strokeWidth}
-            width="50%"
-            height="60%"
-            fill="white" /> -->
-
-        <!--    right side slice -->
-        <!-- <rect
-            x={width / 2 + d.radius - strokeWidth / 2}
-            y={height / 2 - d.radius - strokeWidth}
-            width="50%"
-            height="60%"
-            fill="red" /> -->
+        
+        <!-- right slice     -->
+        {#if d.right.value < max}
+        <polyline 
+        points= {getPoints(d)}
+        fill="green"
+        />
+        {/if}
+         
     {/each}
 
     <!--   value indicator -->
