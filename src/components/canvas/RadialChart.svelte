@@ -101,15 +101,14 @@
                     ? options.rightArcColor || "black"
                     : options.leftArcColorOnFailure || "black";
             ctx.lineWidth = 30;
-            indexOf = revArr.indexOf(data[i].left.value) || 1;
+            indexOf = revArr.indexOf(data[i].left.value) + 1;
             ctx.arc(
                 width / 2,
                 height / 2,
                 startRadius - i * radiusGap,
                 degreesToRadians(270),
                 degreesToRadians(
-                    270 -
-                        (indexOf === numbers.length
+                    180 + (indexOf === numbers.length
                             ? 0
                             : indexOf === 1
                             ? 90 - 90 / numbers.length
