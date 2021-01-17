@@ -17,6 +17,16 @@ let data: Data<"spent", "estimate"> = [
             left: { name: "spent", value: 5 },
             right: { name: "estimate", value: 8 },
         },
+        {
+            name: "M4",
+            left: { name: "spent", value: 5 },
+            right: { name: "estimate", value: 7 },
+        },
+        {
+            name: "M5",
+            left: { name: "spent", value: 8 },
+            right: { name: "estimate", value: 5 },
+        },
     ];
 </script>
 
