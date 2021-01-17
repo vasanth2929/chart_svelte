@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { onMount } from "svelte";
+    import { onMount, onDestroy } from "svelte";
     import {
         degreesToRadians,
         findMinAndMax,
@@ -192,10 +192,28 @@
         rightArcColor: "palegreen",
         leftArcColorOnFailure: "palevioletred",
     };
+    let interval = null;
 
+    let generateRandomValues = () => {
+        let values = [3, 4, 5, 6, 7, 8];
+        let tempData = [];
+        for (let i = 0; i < 5; i++) {
+            tempData.push({
+                name: "M" + i + 1,
+                left: { name: "spent", value: values[Math.floor(Math.random() * values.length)]},
+                right: { name: "estimate", value: values[Math.floor(Math.random() * values.length)] },
+            });
+        }
+        options = {...options,data:tempData};
+    };
     onMount(() => {
         options = { ...options, data: options.data.slice(0, 5) };
         isSlicing = false;
+        interval = setInterval(generateRandomValues, 3000);
+    });
+
+    onDestroy(() => {
+        clearInterval(interval);
     });
 </script>
 
