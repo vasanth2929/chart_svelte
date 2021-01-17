@@ -1,5 +1,4 @@
 <script lang="ts">
-    import type { Data } from "../../types";
     import {
         degreesToRadians,
         findMinAndMax,
@@ -19,23 +18,7 @@
         rightArcColor?: string;
         leftArcColorOnFailure?: string;
     }
-    let data: Data<"spent", "estimate"> = [
-        {
-            name: "M1",
-            left: { name: "spent", value: 8 },
-            right: { name: "estimate", value: 5 },
-        },
-        {
-            name: "M2",
-            left: { name: "spent", value: 5 },
-            right: { name: "estimate", value: 7 },
-        },
-        {
-            name: "M3",
-            left: { name: "spent", value: 3 },
-            right: { name: "estimate", value: 3 },
-        },
-    ];
+    export let data = [];
     let { max, min } = findMinAndMax(data);
 
     function chart(ele: HTMLElement, options: Option) {
@@ -112,20 +95,30 @@
             ctx.closePath();
 
             // left arc
-            // ctx.beginPath();
-            // ctx.strokeStyle = data[i].left.value <= data[i].right.value ? 'palegreen': 'red';
-            // ctx.lineWidth = 30;
-            // indexOf = revArr.indexOf(data[i].left.value) || 1;
-            // ctx.arc(
-            //     width / 2,
-            //     height / 2,
-            //     startRadius - i * radiusGap,
-            //     degreesToRadians(270),
-            //     degreesToRadians(270 - (indexOf === 1 ? 90/numbers.length : 90 / indexOf)),
-            //     true
-            // );
-            // ctx.stroke();
-            // ctx.closePath();
+            ctx.beginPath();
+            ctx.strokeStyle =
+                data[i].left.value <= data[i].right.value
+                    ? options.rightArcColor || "black"
+                    : options.leftArcColorOnFailure || "black";
+            ctx.lineWidth = 30;
+            indexOf = revArr.indexOf(data[i].left.value) || 1;
+            ctx.arc(
+                width / 2,
+                height / 2,
+                startRadius - i * radiusGap,
+                degreesToRadians(270),
+                degreesToRadians(
+                    270 -
+                        (indexOf === numbers.length
+                            ? 0
+                            : indexOf === 1
+                            ? 90 - 90 / numbers.length
+                            : 90 / indexOf)
+                ),
+                true
+            );
+            ctx.stroke();
+            ctx.closePath();
         }
 
         // indicator
@@ -161,9 +154,10 @@
         ctx.fillText(options.rightLabel, width / 2 + 180 - 40, height / 2 + 40);
         ctx.closePath();
 
+        // appending canvas to the div
         ele.appendChild(canvas);
     }
 </script>
 
 <div
-    use:chart={{ data, leftLabel: 'Spent Time', rightLabel: 'Estimate Time', rightArcColor: 'palegreen' }} />
+    use:chart={{ data, leftLabel: 'Spent Time', rightLabel: 'Estimate Time', rightArcColor: 'palegreen', leftArcColorOnFailure: 'palevioletred' }} />
