@@ -17,6 +17,7 @@
         verticalLineColor?: string;
         rightArcColor?: string;
         leftArcColorOnFailure?: string;
+        backgroundColor?:string;
     }
     export let data = [];
     let { max, min } = findMinAndMax(data);
@@ -31,6 +32,7 @@
         let height = options.height || 500;
         canvas.width = width;
         canvas.height = height;
+        canvas.setAttribute('style',`background-color:${options.backgroundColor || 'transparent'}`)
 
         let ctx = canvas.getContext("2d");
 
@@ -155,7 +157,18 @@
         // appending canvas to the div
         ele.appendChild(canvas);
     }
+
+    let options : Option = {
+        data,
+        width:500,
+        height:500,
+        leftLabel:'Spent Time',
+        rightLabel: 'Estimate Time',
+        rightArcColor: 'palegreen',
+        leftArcColorOnFailure: 'palevioletred',
+    };
+
 </script>
 
 <div
-    use:chart={{ data, leftLabel: 'Spent Time', rightLabel: 'Estimate Time', rightArcColor: 'palegreen', leftArcColorOnFailure: 'palevioletred' }} />
+    use:chart={options} />
