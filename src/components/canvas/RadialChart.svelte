@@ -31,7 +31,6 @@
         let height = options.height || 500;
         canvas.width = width;
         canvas.height = height;
-        canvas.setAttribute("style", `border:2px dashed green`);
 
         let ctx = canvas.getContext("2d");
 
