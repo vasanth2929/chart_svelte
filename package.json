@@ -24,6 +24,7 @@
     "@tsconfig/svelte": "^1.0.0"
   },
   "dependencies": {
+    "konva": "^7.2.2",
     "sirv-cli": "^1.0.0"
   }
 }

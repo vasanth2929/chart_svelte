@@ -1,7 +1,7 @@
 <script lang="ts">
-import RadialChart from './components/canvas/RadialChart.svelte';
-import type { Data } from './types';
-let data: Data<"spent", "estimate"> = [
+    import Radial from "./components/canvas/R.svelte";
+    import type { Data } from "./types";
+    let data: Data<"spent", "estimate"> = [
         {
             name: "M1",
             left: { name: "spent", value: 4 },
@@ -30,4 +30,4 @@ let data: Data<"spent", "estimate"> = [
     ];
 </script>
 
-<RadialChart {data} />
+<Radial {data} />
