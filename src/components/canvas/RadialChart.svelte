@@ -200,11 +200,17 @@
         for (let i = 0; i < 5; i++) {
             tempData.push({
                 name: "M" + i + 1,
-                left: { name: "spent", value: values[Math.floor(Math.random() * values.length)]},
-                right: { name: "estimate", value: values[Math.floor(Math.random() * values.length)] },
+                left: {
+                    name: "spent",
+                    value: values[Math.floor(Math.random() * values.length)],
+                },
+                right: {
+                    name: "estimate",
+                    value: values[Math.floor(Math.random() * values.length)],
+                },
             });
         }
-        options = {...options,data:tempData};
+        options = { ...options, data: tempData };
     };
     onMount(() => {
         options = { ...options, data: options.data.slice(0, 5) };
