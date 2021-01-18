@@ -1,11 +1,7 @@
 <script lang="ts">
-    import { onMount } from "svelte";
-    import {
-        degreesToRadians,
-        findMinAndMax,
-        getNumbers,
-        findXPosition,
-    } from "../../utils";
+    import { onMount, onDestroy } from "svelte";
+    import { degreesToRadians } from "../../utils";
+    let ticks = [1, 2, 3, 4, 5];
 
     interface Option {
         width?: number;
@@ -22,9 +18,15 @@
     }
     export let data = [];
     let isSlicing = true;
-    let { max, min } = findMinAndMax(data);
+    // let { max, min } = findMinAndMax(data);
 
     function chart(ele: HTMLElement, options: Option) {
+        let writeText = (ctx, text, x, y) => {
+            ctx.beginPath();
+            ctx.fillStyle = options.fontColor;
+            ctx.fillText(text, x, y);
+            ctx.closePath();
+        };
         function draw(options) {
             let canvas = document.createElement("canvas");
             canvas.classList.add("radial-chart");
@@ -44,38 +46,22 @@
             let ctx = canvas.getContext("2d");
 
             // right text
-            let numbers = getNumbers(min, max);
-            let revArr = [...numbers];
-            numbers.reverse();
+            let revArr = [...ticks];
 
-            for (let i = 0; i < numbers.length; i++) {
-                // right text
-                ctx.beginPath();
-                ctx.fillStyle = options.fontColor;
-                ctx.fillText(
-                    numbers[i].toString(),
-                    findXPosition(width, 180, (90 / numbers.length) * i) +
-                        (i < 1 ? 6 : i * 8),
-                    height / 2 - i * 35
-                );
-                ctx.closePath();
+            writeText(ctx, "1", 180, 80);
+            writeText(ctx, "1", 315, 80);
 
-                // left text
-                ctx.beginPath();
-                ctx.fillStyle = options.fontColor;
-                ctx.fillText(
-                    numbers[i].toString(),
-                    findXPosition(
-                        width,
-                        180,
-                        360 - 180 - (90 / numbers.length) * i
-                    ) -
-                        (i < 1 ? 6 : i * 8) -
-                        5,
-                    height / 2 - i * 35
-                );
-                ctx.closePath();
-            }
+            writeText(ctx, "2", 120, 110);
+            writeText(ctx, "2", 375, 110);
+
+            writeText(ctx, "3", 80, 160);
+            writeText(ctx, "3", 415, 160);
+
+            writeText(ctx, "4", 65, 200);
+            writeText(ctx, "4", 430, 200);
+
+            writeText(ctx, "5", 60, height / 2);
+            writeText(ctx, "5", 435, height / 2);
 
             // arc
             for (let i = 0; i < data.length; i++) {
@@ -90,10 +76,10 @@
                     startRadius - i * radiusGap,
                     degreesToRadians(
                         360 -
-                            (indexOf === numbers.length
+                            (indexOf === ticks.length
                                 ? 0
                                 : indexOf === 1
-                                ? 90 - 90 / numbers.length
+                                ? 90 - 90 / ticks.length
                                 : 90 / indexOf)
                     ),
                     degreesToRadians(270),
@@ -117,10 +103,10 @@
                     degreesToRadians(270),
                     degreesToRadians(
                         180 +
-                            (indexOf === numbers.length
+                            (indexOf === ticks.length
                                 ? 0
                                 : indexOf === 1
-                                ? 90 - 90 / numbers.length
+                                ? 90 - 90 / ticks.length
                                 : 90 / indexOf)
                     ),
                     true
@@ -182,23 +168,47 @@
             },
         };
     }
+    let interval;
 
     let options: Option = {
         data,
-        width: 500,
-        height: 500,
         leftLabel: "Spent Time",
         rightLabel: "Estimate Time",
         rightArcColor: "palegreen",
         leftArcColorOnFailure: "palevioletred",
     };
 
+    let randomize = () => {
+        interval = setInterval(() => {
+            let tempData = [];
+            for (let i = 0; i < 5; i++) {
+                tempData.push({
+                    name: "M" + i + 1,
+                    left: {
+                        name: "spent",
+                        value: ticks[Math.floor(Math.random() * ticks.length)],
+                    },
+                    right: {
+                        name: "estimate",
+                        value: ticks[Math.floor(Math.random() * ticks.length)],
+                    },
+                });
+            }
+            options = { ...options, data: tempData };
+        }, 3000);
+    };
     onMount(() => {
         options = { ...options, data: options.data.slice(0, 5) };
         isSlicing = false;
+    });
+
+    onDestroy(() => {
+        clearInterval(interval);
     });
 </script>
 
 {#if !isSlicing}
     <div use:chart={options} />
 {/if}
+
+<button on:click={randomize}>Randomize Value</button>
