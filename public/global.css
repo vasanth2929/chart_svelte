@@ -61,3 +61,14 @@ button:not(:disabled):active {
 button:focus {
 	border-color: #666;
 }
+
+
+.radial-chart {
+	margin-left: 160px;
+}
+
+@media screen and (max-width:600px){
+	.radial-chart {
+		width: 100% !important;
+	}
+}

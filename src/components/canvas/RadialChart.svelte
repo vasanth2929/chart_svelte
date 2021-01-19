@@ -212,3 +212,16 @@
 {/if}
 
 <button on:click={randomize}>Randomize Value</button>
+
+
+<style>
+    div {
+        display: flex;
+        justify-content: center;
+    }
+    @media screen and (min-width:720px){
+        div {
+            margin-left: -150px;
+        }
+    }
+</style>
