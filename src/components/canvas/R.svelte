@@ -9,9 +9,10 @@
     import type { Shape } from "konva/types/Shape";
     import type { Option } from "../../types";
     // Import Utils
-    import { degreesToRadians, findMinAndMax, getNumbers } from "../../utils";
+    import { degreesToRadians } from "../../utils";
 
     export let data = [];
+    let ticks = [1, 2, 3, 4, 5];
 
     let leftValue: number,
         rightValue: number,
@@ -21,12 +22,13 @@
     let showTooltip: boolean = false;
 
     let isSlicing = true;
-    let { max, min } = findMinAndMax(data);
 
     let writeText = (text, x, y) => new Konva.Text({ text, x, y });
 
     function chart(ele: HTMLElement, options: Option) {
-        let shapes: Array<Shape> = [];
+        let arcs: Array<Shape> = [];
+        let labels: Array<any> = [];
+
         let layer: Layer, stage: Stage, rightArc: Shape, leftArc: Shape;
 
         function draw(options: Option) {
@@ -46,9 +48,7 @@
             let indexOf;
             let { data } = options;
 
-            let numbers = getNumbers(min, max);
-            let revArr = [...numbers];
-            numbers.reverse();
+            let revArr = [...ticks];
 
             for (let i = 0; i < data.length; i++) {
                 rightArc = new Konva.Shape({
@@ -65,10 +65,10 @@
                             startRadius - i * radiusGap,
                             degreesToRadians(
                                 360 -
-                                    (indexOf === numbers.length
+                                    (indexOf === ticks.length
                                         ? 0
                                         : indexOf === 1
-                                        ? 90 - 90 / numbers.length
+                                        ? 90 - 90 / ticks.length
                                         : 90 / indexOf)
                             ),
                             degreesToRadians(270),
@@ -96,10 +96,10 @@
                             degreesToRadians(270),
                             degreesToRadians(
                                 180 +
-                                    (indexOf === numbers.length
+                                    (indexOf === ticks.length
                                         ? 0
                                         : indexOf === 1
-                                        ? 90 - 90 / numbers.length
+                                        ? 90 - 90 / ticks.length
                                         : 90 / indexOf)
                             ),
                             true
@@ -108,8 +108,9 @@
                         c.closePath();
                     },
                 });
-                shapes.push(leftArc);
-                shapes.push(rightArc);
+
+                arcs.push(leftArc);
+                arcs.push(rightArc);
             }
 
             let indicatorShape = new Konva.Shape({
@@ -180,9 +181,20 @@
             layer.add(leftLabel);
             layer.add(rightLabel);
             layer.add(indicatorShape);
-            shapes.forEach((shape) => {
+            arcs.forEach((shape) => {
                 layer.add(shape);
             });
+
+            for (let i = data.length - 1; i >= 0; i--) {
+                layer.add(
+                    writeText(
+                        data[i].name,
+                        width / 2 - 25,
+                        height / 2 - startRadius / 4 - i * 30
+                    )
+                );
+            }
+
             layer.add(verticalLineShape);
             stage.add(layer);
             layer.draw();
