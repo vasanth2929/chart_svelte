@@ -4,8 +4,16 @@ export type Data<T,U> = {
     right: {name:U,value:number}
 } [];
 
-export type DataWithRadius = {
-    left: {name:string,value:number},
-    right: {name:string,value:number},
-    radius?:number
-}[];
+export type Option = {
+    width?: number;
+    height?: number;
+    data: any[];
+    fontColor?: string;
+    leftLabel?: string;
+    rightLabel?: string;
+    valueInticatorColor?: string;
+    verticalLineColor?: string;
+    rightArcColor?: string;
+    leftArcColorOnFailure?: string;
+    backgroundColor?: string;
+}

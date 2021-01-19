@@ -1,36 +1,34 @@
 <script lang="ts">
+    // Import Core
     import { onMount, onDestroy } from "svelte";
+    import { fade } from "svelte/transition";
     import Konva from "konva";
+    // Import Types
     import type { Stage } from "konva/types/Stage";
     import type { Layer } from "konva/types/Layer";
-    import {
-        degreesToRadians,
-        findMinAndMax,
-        getNumbers,
-        findXPosition,
-    } from "../../utils";
     import type { Shape } from "konva/types/Shape";
-    let left, right;
-    interface Option {
-        width?: number;
-        height?: number;
-        data: any[];
-        fontColor?: string;
-        leftLabel?: string;
-        rightLabel?: string;
-        valueInticatorColor?: string;
-        verticalLineColor?: string;
-        rightArcColor?: string;
-        leftArcColorOnFailure?: string;
-        backgroundColor?: string;
-    }
-    let shapes: Shape[] = [];
+    import type { Option } from "../../types";
+    // Import Utils
+    import { degreesToRadians, findMinAndMax, getNumbers } from "../../utils";
+
     export let data = [];
+
+    let leftValue: number,
+        rightValue: number,
+        top: number,
+        left: number,
+        title: string;
+    let showTooltip: boolean = false;
+
     let isSlicing = true;
     let { max, min } = findMinAndMax(data);
 
+    let writeText = (text, x, y) => new Konva.Text({ text, x, y });
+
     function chart(ele: HTMLElement, options: Option) {
+        let shapes: Array<Shape> = [];
         let layer: Layer, stage: Stage, rightArc: Shape, leftArc: Shape;
+
         function draw(options: Option) {
             let wrapper = document.createElement("div");
             wrapper.id = "radial-chart";
@@ -51,39 +49,12 @@
             let numbers = getNumbers(min, max);
             let revArr = [...numbers];
             numbers.reverse();
-            // right text
-            // for (let i = 0; i < numbers.length; i++) {
-            //     // right text
-            //     ctx.beginPath();
-            //     ctx.fillStyle = options.fontColor;
-            //     ctx.fillText(
-            //         numbers[i].toString(),
-            //         findXPosition(width, 180, (90 / numbers.length) * i) +
-            //             (i < 1 ? 6 : i * 8),
-            //         height / 2 - i * 35
-            //     );
-            //     ctx.closePath();
-            //     // left text
-            //     ctx.beginPath();
-            //     ctx.fillStyle = options.fontColor;
-            //     ctx.fillText(
-            //         numbers[i].toString(),
-            //         findXPosition(
-            //             width,
-            //             180,
-            //             360 - 180 - (90 / numbers.length) * i
-            //         ) -
-            //             (i < 1 ? 6 : i * 8) -
-            //             5,
-            //         height / 2 - i * 35
-            //     );
-            //     ctx.closePath();
-            // }
-            // // arc
+
             for (let i = 0; i < data.length; i++) {
                 rightArc = new Konva.Shape({
+                    name: JSON.stringify(data[i]),
                     strokeWidth: 30,
-                    stroke: "palegreen",
+                    stroke: options.rightArcColor || "black",
                     sceneFunc: (c, shape) => {
                         c.moveTo(width / 2, height / 2);
                         c.beginPath();
@@ -108,6 +79,7 @@
                     },
                 });
                 leftArc = new Konva.Shape({
+                    name: JSON.stringify(data[i]),
                     strokeWidth: 30,
                     stroke:
                         data[i].left.value <= data[i].right.value
@@ -136,11 +108,9 @@
                         c.closePath();
                     },
                 });
-
-                layer.add(rightArc);
-                layer.add(leftArc);
+                shapes.push(leftArc);
+                shapes.push(rightArc);
             }
-            stage.add(layer);
 
             let indicatorShape = new Konva.Shape({
                 stroke: options.valueInticatorColor || "orange",
@@ -159,8 +129,6 @@
                 },
             });
 
-            layer.add(indicatorShape);
-
             let verticalLineShape = new Konva.Shape({
                 stroke: options.verticalLineColor || "black",
                 strokeWidth: 3,
@@ -173,15 +141,12 @@
                 },
             });
 
-            layer.add(verticalLineShape);
-
             // left side label
             let leftLabel = new Konva.Text({
                 x: width / 2 - 180 - 40,
                 y: height / 2 + 40,
                 text: options.leftLabel,
             });
-            layer.add(leftLabel);
 
             //right side label
             let rightLabel = new Konva.Text({
@@ -189,13 +154,52 @@
                 y: height / 2 + 40,
                 text: options.rightLabel,
             });
+
+            let left1Text = writeText("1", 180, 70);
+            let right1Text = writeText("1", 315, 70);
+            let left2Text = writeText("2", 120, 110);
+            let right2Text = writeText("2", 375, 110);
+            let left3Text = writeText("3", 80, 160);
+            let right3Text = writeText("3", 415, 160);
+            let left4Text = writeText("4", 65, 200);
+            let right4Text = writeText("4", 430, 200);
+            let left5Text = writeText("5", 60, height / 2 - 5);
+            let right5Text = writeText("5", 435, height / 2 - 5);
+
+            layer.add(left1Text);
+            layer.add(right1Text);
+            layer.add(left2Text);
+            layer.add(right2Text);
+            layer.add(left3Text);
+            layer.add(right3Text);
+            layer.add(left4Text);
+            layer.add(right4Text);
+            layer.add(left5Text);
+            layer.add(right5Text);
+
             layer.add(leftLabel);
             layer.add(rightLabel);
-
-            layer.on("click", function (e) {
-                console.log(e);
+            layer.add(indicatorShape);
+            shapes.forEach((shape) => {
+                layer.add(shape);
             });
+            layer.add(verticalLineShape);
+            stage.add(layer);
             layer.draw();
+
+            stage.on("click", function (e) {
+                if (e.target.attrs?.name) {
+                    showTooltip = true;
+                    let obj = JSON.parse(e.target.attrs?.name);
+                    leftValue = obj.left.value;
+                    rightValue = obj.right.value;
+                    left = e.evt.clientX;
+                    top = e.evt.clientY;
+                    title = obj.name;
+                } else {
+                    showTooltip = false;
+                }
+            });
         }
         draw(options);
         return {
@@ -215,40 +219,30 @@
         rightArcColor: "palegreen",
         leftArcColorOnFailure: "palevioletred",
     };
-    let interval = null;
-
-    let generateRandomValues = () => {
-        // let values = [3, 4, 5, 6, 7, 8];
-        // let tempData = [];
-        // for (let i = 0; i < 5; i++) {
-        //     tempData.push({
-        //         name: "M" + (i + 1),
-        //         left: {
-        //             name: "spent",
-        //             value: values[Math.floor(Math.random() * values.length)],
-        //         },
-        //         right: {
-        //             name: "estimate",
-        //             value: values[Math.floor(Math.random() * values.length)],
-        //         },
-        //     });
-        // }
-        // options = { ...options, data: tempData };
+    // to hide the tooltip
+    let hideToolTip = (e: Event) => {
+        if (e.target instanceof HTMLCanvasElement === false)
+            showTooltip = false;
     };
     onMount(() => {
         options = { ...options, data: options.data.slice(0, 5) };
         isSlicing = false;
-        interval = setInterval(generateRandomValues, 3000);
+        document.addEventListener("click", hideToolTip);
     });
 
     onDestroy(() => {
-        clearInterval(interval);
+        document.removeEventListener("click", hideToolTip);
     });
 </script>
 
 <style>
     .chart__tooltip {
-        position: absolute;
+        background-color: white;
+        padding: 5px 10px;
+        background: white;
+        box-shadow: 1px 1px 5px black, -1px -1px 5px black;
+        font-size: 14px;
+        text-align: center;
     }
 </style>
 
@@ -256,7 +250,13 @@
     <div use:chart={options} />
 {/if}
 
-<div class="chart__tooltip">
-    <p>{data[0]?.left?.name} - {left}</p>
-    <p>{data[0]?.right?.name} - {right}</p>
-</div>
+{#if showTooltip}
+    <div
+        transition:fade
+        class="chart__tooltip"
+        style={`position:absolute;top:${top}px ;left: ${left}px;`}>
+        <p>{title}</p>
+        <p>{data[0]?.left?.name} - {leftValue}</p>
+        <p>{data[0]?.right?.name} - {rightValue}</p>
+    </div>
+{/if}
